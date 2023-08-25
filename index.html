@@ -1,0 +1,67 @@
+<!doctype html>
+<title>v86 Emulator</title>
+
+<script src="/libv86.js"></script>
+<script>
+"use strict";
+
+window.onload = function()
+{
+    var data = "";
+
+    var emulator = window.emulator = new V86Starter({
+        wasm_path: "/v86.wasm",
+        memory_size: 32 * 1024 * 1024,
+        vga_memory_size: 2 * 1024 * 1024,
+        screen_container: document.getElementById("screen_container"),
+        bios: {
+            url: "/bios/seabios.bin",
+        },
+        vga_bios: {
+            url: "/bios/vgabios.bin",
+        },
+        fda: {
+            url: "/sectorc.bin",
+        },
+        autostart: true,
+    });
+
+    emulator.add_listener("serial0-output-char", function(char)
+    {
+        if(char === "\r")
+        {
+            return;
+        }
+
+        data += char;
+        document.getElementById("terminal").value += char;
+    });
+
+    var compile = function() {
+        var fileInput = document.getElementById('source_code');
+        var file = fileInput.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(event) {
+          data = event.target.result;
+          data += "\n";
+          console.log(data);
+          reader.readAsText(file);
+        };
+        emulator.serial0_send(data);
+    }
+    window.compile = compile;
+}
+</script>
+
+<input type="file" id="source_code">
+
+<button onclick="window.compile()">Compile</button>
+
+<!-- A minimal structure for the ScreenAdapter defined in browser/screen.js -->
+<div id="screen_container">
+    <div style="white-space: pre; position: relative; font-family: Liberation Mono, DejaVu Sans Mono, Courier New, monospace; font-weight: bold; font-size: 15px; line-height: 14px"></div>
+    <canvas style="display: none"></canvas>
+</div>
+
+<textarea readonly rows=25 cols=60 id="terminal"></textarea>
