@@ -34,9 +34,11 @@
             outputDone = encoder.readable.pipeTo(port.writable);
             outputStream = encoder.writable;
 
-            readLoop();
-
-            writeToStream("help");
+            term.onData(e => {
+                const writer = outputStream.getWriter();
+                writer.write(e.data);
+                writer.releaseLock();
+            });
 
             readLoop();
         }
@@ -50,19 +52,15 @@
                 }
                 if (done) {
                     console.log('[readLoop] DONE', done);
-                    reader.releaseLock();
-                    break;
                 }
             }
         }
 
         function writeToStream(...lines) {
-            const writer = outputStream.getWriter();
             lines.forEach((line) => {
                 console.log('[SEND]', line);
-                writer.write(line + '\n');
+                
             });
-            writer.releaseLock();
         }
     </script>
 </html>
