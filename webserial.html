@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <h1>My First Heading</h1>
-        <p>My first paragraph.</p>
+        <button id="connect">Connect</button>
     </body>
+    <script>
+        document.getElementById("connect").addEventListener("click", connect);
+        async function connect() {
+            port = await navigator.serial.requestPort();
+        }
+    </script>
 </html>
