@@ -12,27 +12,37 @@
         var term = new Terminal();
         term.open(document.getElementById('terminal'));
 
+        let port;
+        let reader;
+        let inputDone;
+        let inputStream;
+
         document.getElementById("connect").addEventListener("click", connect);
         async function connect() {
             port = await navigator.serial.requestPort();
             await port.open({ baudrate: 9600 });
-            let decoder = new TextDecoderStream();
-        inputDone = port.readable.pipeTo(decoder.writable);
-        inputStream = decoder.readable;
-        
-        reader = inputStream.getReader();
 
-        while (true) {
-            const { value, done } = await reader.read();
-            if (value) {
-                log.textContent += value + '\n';
-            }
-            if (done) {
-                term.write('[readLoop] DONE', done);
-                reader.releaseLock();
-                break;
-            }
+            let decoder = new TextDecoderStream();
+            inputDone = port.readable.pipeTo(decoder.writable);
+            inputStream = decoder.readable;
+            
+            reader = inputStream.getReader();
+            readLoop();
         }
+
+        async function readLoop() {
+            // CODELAB: Add read loop here.
+while (true) {
+  const { value, done } = await reader.read();
+  if (value) {
+    log.textContent += value + '\n';
+  }
+  if (done) {
+    console.log('[readLoop] DONE', done);
+    reader.releaseLock();
+    break;
+  }
+}
         }
     </script>
 </html>
