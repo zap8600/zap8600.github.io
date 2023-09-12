@@ -16,6 +16,8 @@
         let reader;
         let inputDone;
         let inputStream;
+        let outputDone;
+        let outputStream;
 
         document.getElementById("connect").addEventListener("click", connect);
         async function connect() {
@@ -27,6 +29,15 @@
             inputStream = decoder.readable;
             
             reader = inputStream.getReader();
+
+            const encoder = new TextEncoderStream();
+            outputDone = encoder.readable.pipeTo(port.writable);
+            outputStream = encoder.writable;
+
+            readLoop();
+
+            writeToStream("help");
+
             readLoop();
         }
 
@@ -43,6 +54,15 @@
                     break;
                 }
             }
+        }
+
+        function writeToStream(...lines) {
+            const writer = outputStream.getWriter();
+            lines.forEach((line) => {
+                console.log('[SEND]', line);
+                writer.write(line + '\n');
+            });
+            writer.releaseLock();
         }
     </script>
 </html>
