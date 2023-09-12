@@ -32,17 +32,17 @@
 
         async function readLoop() {
             // CODELAB: Add read loop here.
-while (true) {
-  const { value, done } = await reader.read();
-  if (value) {
-    log.textContent += value + '\n';
-  }
-  if (done) {
-    console.log('[readLoop] DONE', done);
-    reader.releaseLock();
-    break;
-  }
-}
+            while (true) {
+                const { value, done } = await reader.read();
+                if (value) {
+                    term.write(value);
+                }
+                if (done) {
+                    console.log('[readLoop] DONE', done);
+                    reader.releaseLock();
+                    break;
+                }
+            }
         }
     </script>
 </html>
