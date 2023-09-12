@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <link rel="stylesheet" href="./xterm.css" />
+        <script src="./xterm.js"></script>
+    </head>
     <body>
+        <div id="terminal"></div>
         <button id="connect">Connect</button>
     </body>
     <script>
+        var term = new Terminal();
+        term.open(document.getElementById('terminal'));
+
         document.getElementById("connect").addEventListener("click", connect);
         async function connect() {
             port = await navigator.serial.requestPort();
+            let decoder = new TextDecoderStream();
+        inputDone = port.readable.pipeTo(decoder.writable);
+        inputStream = decoder.readable;
+        
+        reader = inputStream.getReader();
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (value) {
+                log.textContent += value + '\n';
+            }
+            if (done) {
+                term.write('[readLoop] DONE', done);
+                reader.releaseLock();
+                break;
+            }
+        }
         }
     </script>
 </html>
