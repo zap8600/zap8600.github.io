@@ -2,11 +2,22 @@
 <html>
     <head>
         <link rel="stylesheet" href="./xterm.css" />
+        <link href="./style.css" rel="stylesheet" />
         <script src="./xterm.js"></script>
+        <script src="./tab.js"></script>
     </head>
     <body>
-        <div id="terminal"></div>
-        <button id="connect">Connect</button>
+        <div class="tab">
+            <button class="tablinks" onclick="openTool(event, 'S3LinuxTerminal')">Terminal</button>
+            <button class="tablinks" onclick="openTool(event, 'S3LinuxFlasher')">Flasher</button>
+        </div>
+        <div id="S3LinuxTerm" class="tabcontent">
+            <div id="terminal"></div>
+            <button id="connect">Connect</button>
+        </div>
+        <div id="S3LinuxFlasher" class="tabcontent">
+            <p>Beans!</p>
+        </div>
     </body>
     <script>
         var term = new Terminal();
