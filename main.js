@@ -1,5 +1,5 @@
 let wasm_inst; // WebAssembly.Instance
-let mem = WebAssembly.Memory({initial:200});
+let mem = new WebAssembly.Memory({initial:200});
 let memview; // DataView
 let exports; // WebAssembly.Exports
 const decoder = new TextDecoder();
