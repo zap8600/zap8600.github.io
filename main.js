@@ -29,6 +29,7 @@ const imports = {
         fd_seek() { return 0; },
         args_get() { return 0; },
         args_sizes_get() { return 0; },
+        clock_res_get() { return 0; },
     }
 };
 fetch('csgp4.wasm')
