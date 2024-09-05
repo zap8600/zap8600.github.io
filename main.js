@@ -21,12 +21,14 @@ function js_string_to_wasm(s){
 const imports = {
     // JavaScript functions you’re exposing to C go here.
     "wasi_snapshot_preview1": {
-        environ_sizes_get(){ return 0; },
+        environ_sizes_get() { return 0; },
         environ_get() { return 0; },
         proc_exit() { return 0; },
         fd_write() { return 0; },
         fd_close() { return 0; },
         fd_seek() { return 0; },
+        args_get() { return 0; },
+        args_sizes_get() { return 0; },
     }
 };
 fetch('csgp4.wasm')
