@@ -25,7 +25,7 @@ const imports = {
     env:{
         memory: mem,
         pow: Math.pow,
-        wasi_snapshot_preview1: {
+        "wasi_snapshot_preview1": {
             environ_sizes_get(){ return 0; },
             environ_get() { return 0; },
             proc_exit() { return 0; },
