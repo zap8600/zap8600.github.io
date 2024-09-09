@@ -34,6 +34,7 @@ const imports = {
         fd_advise() { return 0; },
         fd_allocate() { return 0; },
         fd_datasync() { return 0; },
+        fd_fdstat_get() { return 0; },
     }
 };
 fetch('csgp4.wasm')
