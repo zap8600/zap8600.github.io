@@ -42,6 +42,7 @@ const imports = {
         fd_filestat_set_times() { return 0; },
         fd_pread() { return 0; },
         fd_prestat_get() { return 0; },
+        fd_prestat_dir_name() { return 0; },
     }
 };
 fetch('csgp4.wasm')
