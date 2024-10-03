@@ -4073,5 +4073,5 @@ var weights = {
 };
 
 for(let key in weights) {
-    document.getElementById("code").innerHTML += "beans\n";
+    document.getElementById("code").innerHTML += "beans\nbeans";
 }
