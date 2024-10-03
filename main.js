@@ -4073,6 +4073,5 @@ var weights = {
 };
 
 for(let key in weights) {
-    const code = "\n" + key + " ,";
-    document.getElementById("cppconv").textContent += "\nbeans";
+    document.getElementById("code").innerHTML = "beans\n";
 }
