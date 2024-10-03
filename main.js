@@ -4073,5 +4073,6 @@ var weights = {
 };
 
 for(let key in weights) {
-    document.getElementById("cppconv").innerHTML += "\n" + key;
+    const code = "\n" + key + " ,";
+    document.getElementById("cppconv").innerHTML += "beans";
 }
