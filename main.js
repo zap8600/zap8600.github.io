@@ -4078,16 +4078,13 @@ for(let key in weights) {
     var newFunc = document.createElement("PRE");
     div.appendChild(newFunc);
     newFunc.innerHTML = ("void " + key + "() {");
-    div.appendChild(document.createElement("BR"));
     for(let chey in weights[key]) {
         var neuronChange = document.createElement("PRE");
         div.appendChild(neuronChange);
         neuronChange.innerHTML = ("    postSynaptic[\"" + chey + "\"][nextState] += " + weights[key][chey] + ";");
-        div.appendChild(document.createElement("BR"));
     }
     var endFunc = document.createElement("PRE");
     div.appendChild(endFunc);
     endFunc.innerHTML = "}";
-    div.appendChild(document.createElement("BR"));
     div.appendChild(document.createElement("BR"));
 }
