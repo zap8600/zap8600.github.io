@@ -4096,11 +4096,21 @@ for(let key in weights) {
 const newPythonCode = pythonCode.replaceAll("'", "\"");
 
 const regexFinal = /\"\w+\"/g;
-const values = newPythonCode.match(regexFinal)
+const values = newPythonCode.match(regexFinal);
 
-var value = document.createElement("PRE");
-div.appendChild(value);
-value.innerHTML = values;
+var newFunc = document.createElement("PRE");
+div.appendChild(newFunc);
+newFunc.innerHTML = "void createPostSynaptic() {";
+
+for(let i in values) {
+	var newLine = document.createElement("PRE");
+	div.appendChild(newLine);
+	newLine.innerHTML = ("    postSynaptic[" + values[i] + "] = { 0, 0 };");
+}
+
+var endFunc = document.createElement("PRE");
+div.appendChild(endFunc);
+endFunc.innerHTML = "}";
 
 /*
 for(let i in values) {
