@@ -4095,7 +4095,7 @@ for(let key in weights) {
 
 const newPythonCode = pythonCode.replaceAll("'", "\"");
 
-const regexFinal = /\'/g;
+const regexFinal = /\"/g;
 const values = newPythonCode.match(regexFinal)
 
 var value = document.createElement("PRE");
