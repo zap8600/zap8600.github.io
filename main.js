@@ -4078,4 +4078,6 @@ for(let key in weights) {
     var newLine = document.createElement("SPAN");
     div.appendChild(newLine);
     newLine.innerHTML = key;
+    var lineBreak = document.createElement("BR");
+    div.appendChild(lineBreak);
 }
