@@ -4105,7 +4105,7 @@ newFunc.innerHTML = "void createPostSynaptic() {";
 for(let i in values) {
 	var newLine = document.createElement("PRE");
 	div.appendChild(newLine);
-	newLine.innerHTML = ("    postSynaptic[" + values[i] + "] = { " + values[i] + ", { 0, 0 } };");
+	newLine.innerHTML = ("    postSynaptic[" + values[i] + "] = { " + values[i].replaceAll("", "\"") + ", { 0, 0 } };");
 }
 
 var endFunc = document.createElement("PRE");
