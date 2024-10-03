@@ -4093,11 +4093,19 @@ for(let key in weights) {
 }
 */
 
-const regex = /^.*[^']*.*$/g;
-const values = pythonCode.match(regex)
+const newPythonCode = pythonCode.replaceAll("'", "\"");
 
+const regexFinal = /\'/g;
+const values = newPythonCode.match(regexFinal)
+
+var value = document.createElement("PRE");
+div.appendChild(value);
+value.innerHTML = values;
+
+/*
 for(let i in values) {
     var value = document.createElement("PRE");
     div.appendChild(value);
     value.innerHTML = values[i];
 }
+*/
