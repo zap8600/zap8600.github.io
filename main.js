@@ -4075,9 +4075,19 @@ var weights = {
 let div = document.getElementById("code");
 
 for(let key in weights) {
-    var newLine = document.createElement("SPAN");
-    div.appendChild(newLine);
-    newLine.innerHTML = key;
-    var lineBreak = document.createElement("BR");
-    div.appendChild(lineBreak);
+    var newFunc = document.createElement("PRE");
+    div.appendChild(newFunc);
+    newFunc.innerHTML = ("void " + key + "() {");
+    div.appendChild(document.createElement("BR"));
+    for(let chey in weights[key]) {
+        var neuronChange = document.createElement("PRE");
+        div.appendChild(neuronChange);
+        neuronChange.innerHTML = ("    postSynaptic[\"" + chey + "\"][nextState] += " + weights[key][chey] + ";");
+        div.appendChild(document.createElement("BR"));
+    }
+    var endFunc = document.createElement("PRE");
+    div.appendChild(endFunc);
+    endFunc.innerHTML = "}";
+    div.appendChild(document.createElement("BR"));
+    div.appendChild(document.createElement("BR"));
 }
