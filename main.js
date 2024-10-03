@@ -4072,6 +4072,10 @@ var weights = {
 	},
 };
 
+let div = document.getElementById("code");
+
 for(let key in weights) {
-    document.getElementById("code").innerHTML += "beans\nbeans";
+    var newLine = document.createElement("SPAN");
+    div.appendChild(newLine);
+    newLine.innerHTML = key;
 }
