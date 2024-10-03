@@ -4074,5 +4074,5 @@ var weights = {
 
 for(let key in weights) {
     const code = "\n" + key + " ,";
-    document.getElementById("cppconv").innerHTML += "beans";
+    document.getElementById("cppconv").textContent += "\nbeans";
 }
