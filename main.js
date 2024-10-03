@@ -4093,7 +4093,7 @@ for(let key in weights) {
 }
 */
 
-const regex = /^.*[^']*.*$/i;
+const regex = /^.*[^']*.*$/g;
 const values = pythonCode.match(regex)
 
 for(let i in values) {
