@@ -4102,10 +4102,17 @@ var newFunc = document.createElement("PRE");
 div.appendChild(newFunc);
 newFunc.innerHTML = "void createPostSynaptic() {";
 
+const muscles = ['MVU', 'MVL', 'MDL', 'MVR', 'MDR'];
+
 for(let i in values) {
+	var tmpValue = values[i].replaceAll("\"", "");
+	var newValue = "nullptr";
+	if(muscles.indexOf(tmpValue.substring(0, 3) == -1)) {
+		newValue = values[i].replaceAll("\"", "");
+	} 
 	var newLine = document.createElement("PRE");
 	div.appendChild(newLine);
-	newLine.innerHTML = ("    postSynaptic[" + values[i] + "] = { " + values[i].replaceAll("\"", "") + ", { 0, 0 } };");
+	newLine.innerHTML = ("    postSynaptic[" + values[i] + "] = { " + newValue + ", { 0, 0 } };");
 }
 
 var endFunc = document.createElement("PRE");
