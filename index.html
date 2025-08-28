@@ -1,11 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <p>Hello, world!</p>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Minecraft: Java Edition</title>
+        <script src="https://cjrtnc.leaningtech.com/4.2/loader.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@4.21.1/lib/msal-browser.js"></script>
+        <style>
+            html, body {
+                margin: 0;
+                width: 800px;
+                height: 600px;
+            }
+            #progress-bar {
+                display: none;
+            }
+            #tailscaleInput {
+                display: block;
+            }
+            #usernameInput {
+                display: block;
+            }
+            #startButton {
+                display: block;
+            }
+            #microsoftButton {
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <progress id="progress-bar"></progress>
+        <form id="tailscaleInput">
+            Tailscale Auth Key: <input type="text" name="authKey">
+        </form>
+        <form id="usernameInput">
+            Username: <input type="text" name="username"> <br><br>
+        </form>
+        <button onclick="microsoftLogin()" id="microsoftButton">Sign in to Microsoft Account</button>
+        <button onclick="startMC()" id="startButton">Start Minecraft</button>
+        <script>
+            const pathJarMinecraft = "/files/client_1.2.5.jar";
+            const urlDownloadMinecraft = "https://piston-data.mojang.com/v1/objects/4a2fac7504182a97dcbcd7560c6392d7c8139928/client.jar";
+            const pathJarLibs = `/app/lwjgl/lwjgl-2.9.3.jar:/app/lwjgl/lwjgl_util-2.9.3.jar:${pathJarMinecraft}`;
+            const tailscaleInput = document.getElementById("tailscaleInput");
+            const usernameInput = document.getElementById("usernameInput");
+            const startButton = document.getElementById("startButton");
+            const microsoftButton = document.getElementById("microsoftButton");
+            /*
+            const clientJARInput = document.getElementById("clientjar");
+            clientJARInput.addEventListener("change", loadMCClientJAR, false);
+            async function loadMCClientJAR() {
+                const clientJAR = this.files[0];
+                const reader = new FileReader();
+                const fileBuffer = reader.readAsArrayBuffer(clientJAR);
+
+                const bytes = new Uint8Array(fileBuffer);
+
+                await new Promise((resolve, reject) => {
+                    var fds = [];
+                    cheerpOSOpen(fds, pathJarMinecraft, "w", fd => {
+                        cheerpOSWrite(fds, fd, bytes, 0, bytes.length, w => {
+                            cheerpOSClose(fds, fd, resolve);
+                            console.log("Done loading!");
+                        });
+                    });
+                });
+            }
+            */
+            ///*
+            const progressBar = document.getElementById('progress-bar');
+            async function downloadMC() {
+                const response = await fetch(urlDownloadMinecraft);
+                const reader = response.body.getReader();
+                const contentLength = +response.headers.get('Content-Length');
+
+                const bytes = new Uint8Array(contentLength);
+                progressBar.value = 0;
+                progressBar.max = contentLength;
+                
+                let pos = 0;
+                while(true) {
+                    const {done, value} = await reader.read();
+                    if(done) {
+                        break;
+                    }
+                    bytes.set(value, pos);
+                    pos += value.length;
+                    progressBar.value = pos;
+                    progressBar.max = contentLength;
+                }
+
+                progressBar.style.display = "none";
+
+                return new Promise((resolve, reject) => {
+                    var fds = [];
+                    cheerpOSOpen(fds, pathJarMinecraft, "w", fd => {
+                        cheerpOSWrite(fds, fd, bytes, 0, bytes.length, w => {
+                            cheerpOSClose(fds, fd, resolve);
+                        });
+                    });
+                });
+            }
+            //*/
+            async function startMC() {
+                progressBar.style.display = "flex";
+                startButton.style.display = "none";
+                tailscaleInput.style.display = "none";
+                usernameInput.style.display = "none";
+                microsoftButton.style.display = "none";
+                console.log(tailscaleInput.elements[0].value);
+                console.log(usernameInput.elements[0].value);
+                if(tailscaleInput.elements[0].value === "") {
+                    await cheerpjInit({version: 8, javaProperties: ["java.library.path=/app/lwjgl/libraries/"], libraries: {"libGL.so.1": "/app/lwjgl/libraries/gl4es.wasm"}, enableX11: true}); // , tailscaleAuthKey: tailscaleInput.elements[0].value
+                } else {
+                    await cheerpjInit({version: 8, javaProperties: ["java.library.path=/app/lwjgl/libraries/"], libraries: {"libGL.so.1": "/app/lwjgl/libraries/gl4es.wasm"}, enableX11: true, tailscaleAuthKey: tailscaleInput.elements[0].value});
+                }
+                cheerpjCreateDisplay(-1, -1, document.body);
+
+                await downloadMC();
+                if(usernameInput.elements[0].value === "") {
+                    await cheerpjRunMain("net.minecraft.client.Minecraft", pathJarLibs);
+                } else {
+                    await cheerpjRunMain("net.minecraft.client.Minecraft", pathJarLibs, usernameInput.elements[0].value);
+                }
+            }
+
+            const msalConfig = {
+                auth: {
+                    clientId: "82834a52-a911-4d9a-a5c2-adcf2b555831",
+                    authority: 'https://login.microsoftonline.com/consumers'
+                }
+            };
+
+            const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+            async function microsoftLogin() {
+                await msalInstance.initialize();
+
+                var loginRequest = {
+                    scopes: ["XboxLive.SignIn", "XboxLive.offline_access"]
+                };
+
+                const loginResponse = await msalInstance.loginPopup(loginRequest);
+                console.log(loginResponse);
+
+                const xboxUserBody = JSON.stringify({
+                    Properties: {
+                        AuthMethod: "RPS",
+                        SiteName: "user.auth.xboxlive.com",
+                        RpsTicket: "d=" + loginResponse.accessToken,
+                    },
+                    RelyingParty: "http://auth.xboxlive.com",
+                    TokenType: "JWT"
+                });
+
+                let response = await fetch("https://user.auth.xboxlive.com/user/authenticate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "x-xbl-contract-version": "1",
+                    },
+                    body: xboxUserBody,
+                });
+                const xboxUserResponse = await response.json();
+
+                console.log(xboxUserResponse);
+
+                const xboxAuthorizationBody = JSON.stringify({
+                    Properties: {
+                        SandboxId: "RETAIL",
+                        UserTokens: [
+                            xboxUserResponse.Token
+                        ]
+                    },
+                    RelyingParty: "http://xboxlive.com",
+                    TokenType: "JWT"
+                });
+
+                response = await fetch("https://xsts.auth.xboxlive.com/xsts/authorize", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    },
+                    body: xboxAuthorizationBody,
+                });
+                const xboxAuthorizationResponse = await response.json();
+
+                console.log(xboxAuthorizationResponse);
+
+                const mojangAuthorizationBody = JSON.stringify({
+                    Properties: {
+                        SandboxId: "RETAIL",
+                        UserTokens: [
+                            xboxUserResponse.Token
+                        ]
+                    },
+                    RelyingParty: "rp://api.minecraftservices.com/",
+                    TokenType: "JWT"
+                });
+
+                response = await fetch("https://xsts.auth.xboxlive.com/xsts/authorize", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    },
+                    body: xboxAuthorizationBody,
+                });
+                const mojangAuthorizationResponse = await response.json();
+
+                console.log(mojangAuthorizationResponse);
+
+                const launcherLoginBody = JSON.stringify({
+                    xtoken: "XBL3.0 x=" + mojangAuthorizationResponse.DisplayClaims.xui[0].uhs + ";" + mojangAuthorizationResponse.Token,
+                    platform: "PC_LAUNCHER"
+                });
+
+                response = await fetch("https://api.minecraftservices.com/launcher/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    },
+                    body: launcherLoginBody,
+                });
+                const launcherLoginResponse = await response.json();
+
+                console.log(launcherLoginResponse);
+            }
+        </script>
+    </body>
 </html>
